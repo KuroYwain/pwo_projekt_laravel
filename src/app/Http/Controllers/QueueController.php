@@ -7,40 +7,49 @@ use App\Models\JobTask;
 use App\Jobs\ProcessJobTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
 
 
 class QueueController extends Controller
 {
-    public function enqueue(Request $request)
+    public function enqueue()
     {
-        $type = $request->input('type');
+        $request = request()->all();
+//        dd($request);
+//        dd($request->validate([
+//            'type' => 'required|string',
+//            'user_id' => 'required|integer',
+//            'name' => 'nullable|string',
+//            'email' => 'nullable|email',
+//        ]));
+        $type = $request['type'];
 
         switch ($type) {
             case 'create_order':
-                $validated = $request->validate([
-                    'type' => 'required|string',
-                    'user_id' => 'required|integer',
-                    'product_id' => 'required|integer',
-                    'quantity' => 'required|integer|min:1',
-                ]);
+//                $validated = $request->validate([
+//                    'type' => 'required|string',
+//                    'user_id' => 'required|integer',
+//                    'product_id' => 'required|integer',
+//                    'quantity' => 'required|integer|min:1',
+//                ]);
                 break;
 
             case 'update_user':
-                $validated = $request->validate([
-                    'type' => 'required|string',
-                    'user_id' => 'required|integer',
-                    'name' => 'nullable|string',
-                    'email' => 'nullable|email',
-                ]);
+//                $validated = $request->validate([
+//                    'type' => 'required|string',
+//                    'user_id' => 'required|integer',
+//                    'name' => 'nullable|string',
+//                    'email' => 'nullable|email',
+//                ]);
                 break;
 
             case 'send_email':
-                $validated = $request->validate([
-                    'type' => 'required|string',
-                    'to' => 'required|email',
-                    'subject' => 'required|string',
-                    'body' => 'required|string',
-                ]);
+//                $validated = $request->validate([
+//                    'type' => 'required|string',
+//                    'to' => 'required|email',
+//                    'subject' => 'required|string',
+//                    'body' => 'required|string',
+//                ]);
                 break;
 
             default:
@@ -51,7 +60,7 @@ class QueueController extends Controller
 
         $taskId = (string) Str::uuid();
 
-        $payload = array_merge($validated, [
+        $payload = array_merge($request, [
             'task_id' => $taskId,
             'queued_at' => now()->toISOString(),
         ]);
