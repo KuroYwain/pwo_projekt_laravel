@@ -2,12 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Services\TaskHandlers\CreateOrderHandler;
+use App\Services\TaskHandlers\SendEmailHandler;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log;
 use App\Services\TaskHandlers\UpdateUserHandler;
 use App\Services\TaskHandlers\DummyHandler;
-use App\Services\TaskHandlers\TaskHandlerInterface;
 use Illuminate\Support\Facades\DB;
 
 class ProcessClientQueue extends Command
@@ -23,6 +24,8 @@ class ProcessClientQueue extends Command
 
         $this->handlers = [
             'update_user' => new UpdateUserHandler(),
+            'create_order' => new CreateOrderHandler(),
+            'send_email' => new SendEmailHandler(),
         ];
     }
 
@@ -33,7 +36,7 @@ class ProcessClientQueue extends Command
         $this->info("Listening to queues: " . implode(', ', $queues));
 
         while (true) {
-            $task = Redis::blpop($queues, 5); // 5s timeout
+            $task = Redis::blpop($queues, 5);
 
             if (!$task) {
                 continue;

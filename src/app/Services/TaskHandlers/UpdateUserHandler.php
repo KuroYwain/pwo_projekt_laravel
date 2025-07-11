@@ -9,8 +9,8 @@ class UpdateUserHandler implements TaskHandlerInterface
 {
     public function handle(array $payload): void
     {
-        $userId = $payload['payload']['user_id'] ?? null;
-        $email = $payload['payload']['email'] ?? null;
+        $userId = $payload['user_id'] ?? null;
+        $email = $payload['email'] ?? null;
 
         if ($userId && $email) {
             DB::table('users')->where('id', $userId)->update(['email' => $email]);

@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Jobs;
+
 use App\Models\JobTask;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,7 +24,7 @@ class ProcessJobTask implements ShouldQueue
     {
         $task = JobTask::find($this->taskId);
         if ($task) {
-            sleep(5); // symulacja pracy
+            sleep(5);
             $task->status = 'done';
             $task->save();
         }

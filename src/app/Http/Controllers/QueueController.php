@@ -8,20 +8,63 @@ use App\Jobs\ProcessJobTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 
+
 class QueueController extends Controller
 {
-    public function enqueue(/*Request $request*/)
+    public function enqueue(Request $request)
     {
-        dd(Redis::set('test_key', 'Hello from Azure Redis with SSL'));
+        $type = $request->input('type');
 
-        $task = JobTask::create([
-            'name' => $request->input('name', 'default'),
-            'status' => 'pending',
+        switch ($type) {
+            case 'create_order':
+                $validated = $request->validate([
+                    'type' => 'required|string',
+                    'user_id' => 'required|integer',
+                    'product_id' => 'required|integer',
+                    'quantity' => 'required|integer|min:1',
+                ]);
+                break;
+
+            case 'update_user':
+                $validated = $request->validate([
+                    'type' => 'required|string',
+                    'user_id' => 'required|integer',
+                    'name' => 'nullable|string',
+                    'email' => 'nullable|email',
+                ]);
+                break;
+
+            case 'send_email':
+                $validated = $request->validate([
+                    'type' => 'required|string',
+                    'to' => 'required|email',
+                    'subject' => 'required|string',
+                    'body' => 'required|string',
+                ]);
+                break;
+
+            default:
+                return response()->json([
+                    'error' => "Unsupported task type: {$type}"
+                ], 422);
+        }
+
+        $taskId = (string) Str::uuid();
+
+        $payload = array_merge($validated, [
+            'task_id' => $taskId,
+            'queued_at' => now()->toISOString(),
         ]);
 
-        ProcessJobTask::dispatch($task->id);
+        $queue = 'queue:client1';
 
-        return response()->json(['id' => $task->id]);
+        Redis::rpush($queue, json_encode($payload));
+
+        return response()->json([
+            'message' => "✅ Task '{$type}' enqueued to {$queue}.",
+            'task_id' => $taskId,
+            'queue' => $queue,
+        ], 202);
     }
 
     public function status($id)
