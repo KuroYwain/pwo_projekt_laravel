@@ -7,6 +7,7 @@ use App\Models\JobTask;
 use App\Jobs\ProcessJobTask;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 

@@ -59,6 +59,15 @@ return [
             'throw' => false,
             'report' => false,
         ],
+        'azure' => [
+            'driver'            => 'azure',
+            'local_address'     => env('AZURE_STORAGE_LOCAL_ADDRESS', null),
+            'name'              => env('AZURE_STORAGE_NAME'),
+            'key'               => env('AZURE_STORAGE_KEY'),
+            'container'         => env('AZURE_STORAGE_CONTAINER'),
+            'prefix'            => env('AZURE_STORAGE_PREFIX', ''),
+            'url'               => env('AZURE_STORAGE_URL', null),
+        ],
 
     ],
 

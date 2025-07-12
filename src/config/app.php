@@ -125,6 +125,7 @@ return [
     'aliases' => [
         // inne aliasy...
         'Redis' => Illuminate\Support\Facades\Redis::class,
+        'Storage' => Illuminate\Support\Facades\Storage::class,
     ],
 
 ];
